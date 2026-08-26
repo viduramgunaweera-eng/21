@@ -3,17 +3,33 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 
+function makeDistortionCurve(amount = 25) {
+  const n_samples = 44100;
+  const curve = new Float32Array(n_samples);
+  const deg = Math.PI / 180;
+  for (let i = 0; i < n_samples; ++i) {
+    const x = (i * 2) / n_samples - 1;
+    curve[i] = ((3 + amount) * x * 20 * deg) / (Math.PI + amount * Math.abs(x));
+  }
+  return curve;
+}
+
 export default function SoundToggle() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const osc1Ref = useRef<OscillatorNode | null>(null);
   const osc2Ref = useRef<OscillatorNode | null>(null);
+  const osc3Ref = useRef<OscillatorNode | null>(null);
+  const osc4Ref = useRef<OscillatorNode | null>(null);
+  const osc3GainRef = useRef<GainNode | null>(null);
+  const osc4GainRef = useRef<GainNode | null>(null);
+  const noiseSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const noiseGainRef = useRef<GainNode | null>(null);
+  const noiseFilterRef = useRef<BiquadFilterNode | null>(null);
+  const waveShaperRef = useRef<WaveShaperNode | null>(null);
   const lfoRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
   const filterNodeRef = useRef<BiquadFilterNode | null>(null);
-
-  const osc3Ref = useRef<OscillatorNode | null>(null);
-  const osc3GainRef = useRef<GainNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const scrollListenerRef = useRef<(() => void) | null>(null);
 
@@ -24,74 +40,120 @@ export default function SoundToggle() {
       const ctx = new AudioContextClass();
       audioCtxRef.current = ctx;
 
-      // Master Gain
+      // 1. Master Gain
       const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0.08, ctx.currentTime); // Highly audible on mobile but balanced
+      masterGain.gain.setValueAtTime(0.08, ctx.currentTime); // High audibility, comfortable volume
       masterGain.connect(ctx.destination);
       gainNodeRef.current = masterGain;
 
-      // Low pass filter with low resonance peak
-      const filter = ctx.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(450, ctx.currentTime); // Opens up to 1800Hz when revving
-      filter.Q.setValueAtTime(3, ctx.currentTime);
-      filter.connect(masterGain);
-      filterNodeRef.current = filter;
+      // 2. Main Filter (frame the frequency response)
+      const mainFilter = ctx.createBiquadFilter();
+      mainFilter.type = "lowpass";
+      mainFilter.frequency.setValueAtTime(450, ctx.currentTime);
+      mainFilter.Q.setValueAtTime(1.5, ctx.currentTime);
+      mainFilter.connect(masterGain);
+      filterNodeRef.current = mainFilter;
 
-      // Base idle pitch for a V10 (around 120Hz)
-      const baseIdlePitch = 120;
+      // 3. WaveShaper Node (Adds realistic mechanical overdrive distortion to synth waves)
+      const waveShaper = ctx.createWaveShaper();
+      waveShaper.curve = makeDistortionCurve(35); // Soft mechanical exhaust clipping
+      waveShaper.oversample = "4x";
+      waveShaper.connect(mainFilter);
+      waveShaperRef.current = waveShaper;
 
-      // Oscillator 1 - Sawtooth wave (main base growl)
+      // V12 Base Pitch (idle growl at 95Hz)
+      const baseIdlePitch = 95;
+
+      // 4. Oscillators Setup
+      // Osc 1 - Sawtooth wave (main V12 cylinder growl)
       const osc1 = ctx.createOscillator();
       osc1.type = "sawtooth";
       osc1.frequency.setValueAtTime(baseIdlePitch, ctx.currentTime);
-      osc1.connect(filter);
+      osc1.connect(waveShaper);
       osc1Ref.current = osc1;
 
-      // Oscillator 2 - Sawtooth wave (detuned for chorused texture)
+      // Osc 2 - Sawtooth wave (slightly detuned for organic thickness)
       const osc2 = ctx.createOscillator();
       osc2.type = "sawtooth";
-      osc2.frequency.setValueAtTime(baseIdlePitch + 0.8, ctx.currentTime);
-      osc2.connect(filter);
+      osc2.frequency.setValueAtTime(baseIdlePitch + 0.6, ctx.currentTime);
+      osc2.connect(waveShaper);
       osc2Ref.current = osc2;
 
-      // Oscillator 3 - High screaming 5th-order harmonic (authentic V10 acoustic signature)
+      // Osc 3 - Screaming V12 3rd harmonic (exhaust resonance)
       const osc3 = ctx.createOscillator();
       osc3.type = "sawtooth";
-      osc3.frequency.setValueAtTime(baseIdlePitch * 5.0, ctx.currentTime);
+      osc3.frequency.setValueAtTime(baseIdlePitch * 3.0, ctx.currentTime);
       
       const osc3Gain = ctx.createGain();
-      osc3Gain.gain.setValueAtTime(0.02, ctx.currentTime); // Subtle growl at idle, screams at high speed
-      
+      osc3Gain.gain.setValueAtTime(0.04, ctx.currentTime); // Subtle growl at idle
       osc3.connect(osc3Gain);
-      osc3Gain.connect(filter);
+      osc3Gain.connect(waveShaper);
       osc3Ref.current = osc3;
       osc3GainRef.current = osc3Gain;
 
-      // LFO to modulate base frequencies slightly for organic rumbling idle
+      // Osc 4 - Screaming V12 6th harmonic (the high pitch exhaust howl)
+      const osc4 = ctx.createOscillator();
+      osc4.type = "sawtooth";
+      osc4.frequency.setValueAtTime(baseIdlePitch * 6.0, ctx.currentTime);
+      
+      const osc4Gain = ctx.createGain();
+      osc4Gain.gain.setValueAtTime(0.02, ctx.currentTime); // Very quiet at idle, loud when revving
+      osc4.connect(osc4Gain);
+      osc4Gain.connect(waveShaper);
+      osc4Ref.current = osc4;
+      osc4GainRef.current = osc4Gain;
+
+      // 5. White Noise Generator (Exhaust Gas Velocity rush)
+      const bufferSize = 2 * ctx.sampleRate;
+      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const channelData = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        channelData[i] = Math.random() * 2 - 1;
+      }
+      
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      noiseSource.loop = true;
+
+      // Bandpass filter to sculpt the exhaust noise
+      const noiseFilter = ctx.createBiquadFilter();
+      noiseFilter.type = "bandpass";
+      noiseFilter.frequency.setValueAtTime(300, ctx.currentTime);
+      noiseFilter.Q.setValueAtTime(2.0, ctx.currentTime);
+
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.015, ctx.currentTime); // Soft at idle
+
+      noiseSource.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(waveShaper); // Noise passes through distortion for structural mechanical grind!
+      
+      noiseSource.start();
+      
+      noiseSourceRef.current = noiseSource;
+      noiseGainRef.current = noiseGain;
+      noiseFilterRef.current = noiseFilter;
+
+      // 6. LFO to modulate idle frequencies for mechanical instability
       const lfo = ctx.createOscillator();
       lfo.type = "sine";
-      lfo.frequency.setValueAtTime(1.2, ctx.currentTime); // Modulate at 1.2Hz
+      lfo.frequency.setValueAtTime(1.5, ctx.currentTime);
 
-      const lfoGain1 = ctx.createGain();
-      lfoGain1.gain.setValueAtTime(4.0, ctx.currentTime); // Modulate base frequency by +/- 4Hz
-      lfo.connect(lfoGain1);
-      lfoGain1.connect(osc1.frequency);
-      lfoGain1.connect(osc2.frequency);
-
-      const lfoGain2 = ctx.createGain();
-      lfoGain2.gain.setValueAtTime(20.0, ctx.currentTime); // Modulate the 5th-order harmonic proportionally
-      lfo.connect(lfoGain2);
-      lfoGain2.connect(osc3.frequency);
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.setValueAtTime(3.0, ctx.currentTime);
       
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc1.frequency);
+      lfoGain.connect(osc2.frequency);
+
       lfo.start();
       osc1.start();
       osc2.start();
       osc3.start();
-
+      osc4.start();
       lfoRef.current = lfo;
 
-      // --- SCROLL VELOCITY MODULATION ---
+      // --- SCROLL VELOCITY ENGINE ENGINE ---
       let lastScrollY = window.scrollY;
       let lastTime = performance.now();
       let targetPitchMultiplier = 1.0;
@@ -104,8 +166,8 @@ export default function SoundToggle() {
         if (dt > 0) {
           const dy = Math.abs(currentScrollY - lastScrollY);
           const speed = dy / dt; // pixels per millisecond
-          // Map scroll speed: idle multiplier is 1.0, max speed revs it up to 3.5x
-          targetPitchMultiplier = 1.0 + Math.min(speed * 2.0, 2.5);
+          // Map scroll speed: idle is 1.0, max is 3.5x
+          targetPitchMultiplier = 1.0 + Math.min(speed * 2.2, 2.5);
         }
         lastScrollY = currentScrollY;
         lastTime = now;
@@ -114,32 +176,42 @@ export default function SoundToggle() {
       window.addEventListener("scroll", handleScroll, { passive: true });
       scrollListenerRef.current = handleScroll;
 
-      // Animation frame update loop (flywheel inertia simulation)
+      // Physics loop (inertia simulation)
       const updateAudio = () => {
         if (!audioCtxRef.current || ctx.state === "suspended") return;
 
-        // Constantly decay target back to idle (1.0)
-        targetPitchMultiplier += (1.0 - targetPitchMultiplier) * 0.08;
+        // Decelerate decay back to idle
+        targetPitchMultiplier += (1.0 - targetPitchMultiplier) * 0.07;
 
-        // Interpolate actual pitch. Quick acceleration (0.15) vs slow engine deceleration (0.03)
+        // Acceleration inertia
         const easeRate = targetPitchMultiplier > currentPitchMultiplier ? 0.15 : 0.03;
         currentPitchMultiplier += (targetPitchMultiplier - currentPitchMultiplier) * easeRate;
 
         const baseF = baseIdlePitch * currentPitchMultiplier;
         const nowTime = ctx.currentTime;
 
-        // Set frequencies
+        // Update oscillator frequencies
         osc1.frequency.setValueAtTime(baseF, nowTime);
-        osc2.frequency.setValueAtTime(baseF + 0.8, nowTime);
-        osc3.frequency.setValueAtTime(baseF * 5.0, nowTime);
+        osc2.frequency.setValueAtTime(baseF + 0.6, nowTime);
+        osc3.frequency.setValueAtTime(baseF * 3.0, nowTime);
+        osc4.frequency.setValueAtTime(baseF * 6.0, nowTime);
 
-        // Adjust the high-pitched harmonic volume (gain) based on throttle/RPM
-        const screamGain = 0.02 + (currentPitchMultiplier - 1.0) * 0.08;
-        osc3Gain.gain.setValueAtTime(screamGain, nowTime);
+        // Scale harmonic volumes (gain) with RPM (screams at high RPMs)
+        const osc3Vol = 0.04 + (currentPitchMultiplier - 1.0) * 0.06;
+        const osc4Vol = 0.02 + (currentPitchMultiplier - 1.0) * 0.08;
+        osc3Gain.gain.setValueAtTime(osc3Vol, nowTime);
+        osc4Gain.gain.setValueAtTime(osc4Vol, nowTime);
 
-        // Open up the low-pass filter cutoff with high RPMs to let the metallic scream through
-        const filterF = 450 + (currentPitchMultiplier - 1.0) * 1200;
-        filter.frequency.setValueAtTime(filterF, nowTime);
+        // Update noise filter (exhaust speed rushes higher!)
+        const noiseF = 300 + (currentPitchMultiplier - 1.0) * 900;
+        noiseFilter.frequency.setValueAtTime(noiseF, nowTime);
+
+        const noiseVol = 0.015 + (currentPitchMultiplier - 1.0) * 0.04;
+        noiseGain.gain.setValueAtTime(noiseVol, nowTime);
+
+        // Open up the master lowpass filter cutoff to let the screaming mechanical frequencies through
+        const mainFilterF = 450 + (currentPitchMultiplier - 1.0) * 1600;
+        mainFilter.frequency.setValueAtTime(mainFilterF, nowTime);
 
         animationFrameRef.current = requestAnimationFrame(updateAudio);
       };
@@ -148,7 +220,7 @@ export default function SoundToggle() {
 
       // Expose manual click rev blips
       const triggerRev = () => {
-        targetPitchMultiplier = 3.2; // Blip the engine revs
+        targetPitchMultiplier = 3.2; // Blip the throttle!
       };
 
       document.addEventListener("click", triggerRev);
@@ -183,6 +255,16 @@ export default function SoundToggle() {
         osc3Ref.current.stop();
         osc3Ref.current.disconnect();
         osc3Ref.current = null;
+      }
+      if (osc4Ref.current) {
+        osc4Ref.current.stop();
+        osc4Ref.current.disconnect();
+        osc4Ref.current = null;
+      }
+      if (noiseSourceRef.current) {
+        noiseSourceRef.current.stop();
+        noiseSourceRef.current.disconnect();
+        noiseSourceRef.current = null;
       }
       if (lfoRef.current) {
         lfoRef.current.stop();
