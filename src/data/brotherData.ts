@@ -99,7 +99,7 @@ export const brotherData: BrotherData = {
     {
       year: "18",
       title: "DEBUT SEASON",
-      description: "Entering adulthood. License to race obtained. Navigating university and adult track days.",
+      description: "Entering adulthood. License to race obtained. Navigating and adult track days.",
       image: "/images/timeline_5.png",
     },
     {
