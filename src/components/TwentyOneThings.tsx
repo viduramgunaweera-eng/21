@@ -26,7 +26,7 @@ export default function TwentyOneThings() {
   };
 
   return (
-    <section id="things" className="w-full min-h-screen bg-brand-charcoal py-24 px-6 md:px-24 relative overflow-hidden">
+    <section id="things" className="w-full min-h-screen bg-brand-charcoal py-24 px-12 md:px-24 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-brand-white/5" />
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-brand-white/5" />

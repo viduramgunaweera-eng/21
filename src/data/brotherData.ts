@@ -8,6 +8,7 @@ export interface TimelineEvent {
   year: string;
   title: string;
   description: string;
+  image: string;
 }
 
 export interface ArchiveImage {
@@ -75,31 +76,37 @@ export const brotherData: BrotherData = {
       year: "01",
       title: "STARTING GRID",
       description: "The beginning. Est. 2005. Engine turned on. The green lights are lit.",
+      image: "/images/timeline_1.png",
     },
     {
       year: "05",
       title: "FIRST LAPS",
       description: "Childhood memories. Speeding through sandbox tracks and exploring the backyard paddock.",
+      image: "/images/timeline_2.png",
     },
     {
       year: "10",
       title: "NEW CIRCUIT",
       description: "Adapting to school circuits. Learning the racing lines, finding new teammates.",
+      image: "/images/timeline_3.png",
     },
     {
       year: "15",
       title: "FULL THROTTLE",
       description: "Teenage speed runs. Discovering music, late-night studies, and high-octane friendships.",
+      image: "/images/timeline_4.png",
     },
     {
       year: "18",
       title: "DEBUT SEASON",
       description: "Entering adulthood. License to race obtained. Navigating university and adult track days.",
+      image: "/images/timeline_5.png",
     },
     {
       year: "21",
       title: "CURRENT POSITION",
       description: "P1 on the starting grid. The next season starts. Driver is primed and ready. Full send.",
+      image: "/images/timeline_6.png",
     },
   ],
   archive: [
@@ -176,7 +183,7 @@ export const brotherData: BrotherData = {
   finalMessage: {
     headline: "HAPPY 21ST.",
     subheadline: "THE RACE IS JUST BEGINNING.",
-    message: "To my brother — here's to another year of crazy memories, big dreams, unexpected turns and full-throttle living. Keep pushing. Keep laughing. Keep becoming the person you're meant to be. And whatever happens... NEVER HIT THE BRAKES.",
+    message: "To my bro here's to another year of crazy memories, big dreams, unexpected turns and full-throttle living. Keep pushing. Keep laughing. Keep becoming the person you're meant to be. And whatever happens... NEVER HIT THE BRAKES.",
     signoff: "— Your Brother",
   },
 };

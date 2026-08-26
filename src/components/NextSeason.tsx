@@ -20,7 +20,7 @@ export default function NextSeason() {
     <section 
       ref={containerRef} 
       id="future" 
-      className="w-full min-h-screen bg-brand-black py-24 px-6 md:px-24 flex items-center relative overflow-hidden"
+      className="w-full min-h-screen bg-brand-black py-24 px-12 md:px-24 flex items-center relative overflow-hidden"
     >
       {/* Blueprint grid overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none" />

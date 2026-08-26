@@ -34,7 +34,7 @@ export default function MemoryArchive() {
   };
 
   return (
-    <section id="archive" className="w-full min-h-screen bg-brand-black py-24 px-6 md:px-24 relative overflow-hidden">
+    <section id="archive" className="w-full min-h-screen bg-brand-black py-24 px-12 md:px-24 relative overflow-hidden">
       {/* Visual background details */}
       <div className="absolute top-1/3 left-10 text-[100px] font-bebas text-brand-white/2 select-none pointer-events-none tracking-widest">
         THE ARCHIVE

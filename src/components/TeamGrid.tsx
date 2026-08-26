@@ -36,7 +36,7 @@ export default function TeamGrid() {
   };
 
   return (
-    <section id="grid" className="w-full min-h-screen bg-brand-charcoal py-24 px-6 md:px-24 flex items-center relative overflow-hidden">
+    <section id="grid" className="w-full min-h-screen bg-brand-charcoal py-24 px-12 md:px-24 flex items-center relative overflow-hidden">
       {/* Background checks pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(45deg,#050505_25%,transparent_25%),linear-gradient(-45deg,#050505_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#050505_75%),linear-gradient(-45deg,transparent_75%,#050505_75%)] bg-[size:40px_40px] opacity-2 pointer-events-none" />
 

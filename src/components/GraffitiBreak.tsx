@@ -26,7 +26,7 @@ export default function GraffitiBreak() {
   };
 
   return (
-    <section id="graffiti" className="w-full min-h-[70vh] bg-brand-black flex items-center justify-center relative overflow-hidden py-24 px-6 select-none">
+    <section id="graffiti" className="w-full min-h-[70vh] bg-brand-black flex items-center justify-center relative overflow-hidden py-24 px-12 md:px-24 select-none">
       {/* Decorative Spray paint texture backdrops */}
       <div className="absolute top-1/4 left-1/4 w-80 h-80 spray-texture opacity-30 rounded-full blur-[40px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 spray-texture opacity-20 rounded-full blur-[60px] pointer-events-none" />

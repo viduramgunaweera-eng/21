@@ -21,14 +21,14 @@ export default function SoundToggle() {
 
       // Master Gain
       const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0.04, ctx.currentTime); // Low volume background rumble
+      masterGain.gain.setValueAtTime(0.08, ctx.currentTime); // Low volume but audible background rumble
       masterGain.connect(ctx.destination);
       gainNodeRef.current = masterGain;
 
       // Low pass filter to make the engine hum deep and growling
       const filter = ctx.createBiquadFilter();
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(140, ctx.currentTime); // Cutoff high harsh frequencies
+      filter.frequency.setValueAtTime(320, ctx.currentTime); // Cutoff at 320Hz to preserve harmonics for mobile speakers
       filter.Q.setValueAtTime(4, ctx.currentTime);
       filter.connect(masterGain);
       filterNodeRef.current = filter;
@@ -36,14 +36,14 @@ export default function SoundToggle() {
       // Oscillator 1 - Sawtooth wave (main engine buzz)
       const osc1 = ctx.createOscillator();
       osc1.type = "sawtooth";
-      osc1.frequency.setValueAtTime(62, ctx.currentTime); // B1 note, low rumble
+      osc1.frequency.setValueAtTime(88, ctx.currentTime); // F2 note, higher base pitch for small speakers
       osc1.connect(filter);
       osc1Ref.current = osc1;
 
       // Oscillator 2 - Sawtooth wave (slightly detuned for organic chorus)
       const osc2 = ctx.createOscillator();
       osc2.type = "sawtooth";
-      osc2.frequency.setValueAtTime(62.8, ctx.currentTime); // Slightly detuned
+      osc2.frequency.setValueAtTime(89.2, ctx.currentTime); // Slightly detuned
       osc2.connect(filter);
       osc2Ref.current = osc2;
 
@@ -53,7 +53,7 @@ export default function SoundToggle() {
       lfo.frequency.setValueAtTime(0.8, ctx.currentTime); // Modulate at 0.8 Hz (idle cycle)
 
       const lfoGain = ctx.createGain();
-      lfoGain.gain.setValueAtTime(3.5, ctx.currentTime); // Modulate frequency by +/- 3.5Hz
+      lfoGain.gain.setValueAtTime(6.0, ctx.currentTime); // Modulate frequency by +/- 6Hz for punchier idle rumble
 
       lfo.connect(lfoGain);
       lfoGain.connect(osc1.frequency);
@@ -76,14 +76,14 @@ export default function SoundToggle() {
         filter.frequency.cancelScheduledValues(now);
 
         // Accelerate
-        osc1.frequency.exponentialRampToValueAtTime(110, now + 0.15);
-        osc2.frequency.exponentialRampToValueAtTime(111, now + 0.15);
-        filter.frequency.exponentialRampToValueAtTime(250, now + 0.15);
+        osc1.frequency.exponentialRampToValueAtTime(170, now + 0.15);
+        osc2.frequency.exponentialRampToValueAtTime(172, now + 0.15);
+        filter.frequency.exponentialRampToValueAtTime(550, now + 0.15);
 
         // Decelerate back to base idle
-        osc1.frequency.exponentialRampToValueAtTime(62, now + 0.8);
-        osc2.frequency.exponentialRampToValueAtTime(62.8, now + 0.8);
-        filter.frequency.exponentialRampToValueAtTime(140, now + 0.8);
+        osc1.frequency.exponentialRampToValueAtTime(88, now + 0.8);
+        osc2.frequency.exponentialRampToValueAtTime(89.2, now + 0.8);
+        filter.frequency.exponentialRampToValueAtTime(320, now + 0.8);
       };
 
       document.addEventListener("click", triggerRev);

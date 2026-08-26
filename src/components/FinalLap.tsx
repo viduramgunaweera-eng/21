@@ -27,7 +27,7 @@ export default function FinalLap() {
   return (
     <section 
       id="final" 
-      className="w-full min-h-screen bg-brand-black flex items-center justify-center relative overflow-hidden py-24 px-6 select-none"
+      className="w-full min-h-screen bg-brand-black flex items-center justify-center relative overflow-hidden py-24 px-12 md:px-24 select-none"
     >
       {/* Massive 21 in background with extremely low opacity */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
