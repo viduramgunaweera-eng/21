@@ -26,12 +26,12 @@ export default function TwentyOneThings() {
   };
 
   return (
-    <section id="things" className="w-full min-h-screen bg-brand-charcoal py-24 px-12 md:px-24 relative overflow-hidden">
+    <section id="things" className="w-full min-h-screen bg-brand-charcoal py-24 editorial-container flex flex-col justify-center items-center relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-brand-white/5" />
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-brand-white/5" />
 
-      <div className="w-full max-w-7xl mx-auto z-10 relative">
+      <div className="w-full max-w-7xl mx-auto z-10 relative flex flex-col items-center">
         {/* Header */}
         <div className="mb-16 text-center">
           <span className="text-[10px] font-sans tracking-[0.25em] text-brand-red mb-2 uppercase font-semibold block">
@@ -51,13 +51,13 @@ export default function TwentyOneThings() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full"
         >
           {brotherData.twentyOneThings.map((thing) => (
             <motion.div
               key={thing.number}
               variants={cardVariants}
-              className="bg-brand-black border border-brand-white/5 p-6 flex flex-col justify-between hover:border-brand-red/40 transition-colors duration-300 relative group overflow-hidden"
+              className="bg-brand-black border border-brand-white/5 p-6 flex flex-col justify-between items-center text-center hover:border-brand-red/40 transition-colors duration-300 relative group overflow-hidden"
             >
               {/* Corner accent pixel */}
               <div className="absolute top-0 right-0 w-1 h-1 bg-brand-red" />
@@ -65,9 +65,9 @@ export default function TwentyOneThings() {
               {/* Thin background racing grid line */}
               <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-brand-white/2 pointer-events-none" />
 
-              <div>
+              <div className="w-full flex flex-col items-center">
                 {/* Header info */}
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between w-full items-center mb-4 border-b border-brand-white/5 pb-2">
                   <span className="text-xs font-bebas font-semibold text-brand-red tracking-widest">
                     #{thing.number}
                   </span>
@@ -77,18 +77,18 @@ export default function TwentyOneThings() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg md:text-xl font-bebas font-bold text-brand-white tracking-wide uppercase mb-2">
+                <h3 className="text-lg md:text-xl font-bebas font-bold text-brand-white tracking-wide uppercase mb-2 text-center">
                   {thing.title}
                 </h3>
               </div>
 
               {/* Description */}
-              <p className="text-xs text-brand-white/70 leading-relaxed font-sans mt-2">
+              <p className="text-xs text-brand-white/70 leading-relaxed font-sans mt-2 text-center">
                 {thing.description}
               </p>
 
               {/* Telemetry bar visual decorator */}
-              <div className="flex gap-1.5 mt-6 items-center">
+              <div className="w-full flex gap-1.5 mt-6 items-center">
                 <div className="h-1.5 w-1.5 rounded-none bg-brand-red" />
                 <div className="h-[2px] flex-1 bg-brand-white/10 relative">
                   <div className="absolute top-0 left-0 h-full w-1/3 bg-brand-white/35 group-hover:w-full transition-all duration-700 ease-out" />

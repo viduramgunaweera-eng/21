@@ -21,7 +21,7 @@ export default function RaceTimeline() {
       {/* Sticky container for horizontal scrolling effect on desktop */}
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center py-16 md:py-24">
         {/* Section Header */}
-        <div className="px-12 md:px-24 mb-6 md:mb-12 z-20 flex justify-between items-end">
+        <div className="editorial-container mb-6 md:mb-12 z-20 flex justify-between items-end">
           <div>
             <span className="text-[10px] font-sans tracking-[0.25em] text-brand-red mb-2 uppercase font-semibold block">
               03 // GRAND PRIX HISTORY

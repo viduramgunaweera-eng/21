@@ -26,7 +26,7 @@ export default function DriverProfile() {
   };
 
   return (
-    <section id="driver" className="w-full min-h-screen bg-brand-charcoal py-24 px-12 md:px-24 flex items-center relative overflow-hidden">
+    <section id="driver" className="w-full min-h-screen bg-brand-charcoal py-24 editorial-container flex items-center relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-brand-red/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-brand-gold/5 rounded-full blur-[80px] pointer-events-none" />

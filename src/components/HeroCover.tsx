@@ -56,7 +56,7 @@ export default function HeroCover() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="relative w-full min-h-screen bg-brand-black overflow-hidden flex flex-col justify-end md:justify-center px-12 md:px-24 py-16 md:py-0 select-none"
+      className="relative w-full min-h-screen bg-brand-black overflow-hidden flex flex-col justify-end md:justify-center editorial-container py-16 md:py-0 select-none"
     >
       {/* 1. Portrait Image with cinematic overlay */}
       <motion.div
@@ -111,7 +111,7 @@ export default function HeroCover() {
       </div>
 
       {/* 4. Main Editorial Content */}
-      <div className="relative z-20 max-w-4xl flex flex-col justify-end h-full md:justify-center">
+      <div className="relative z-20 max-w-4xl flex flex-col justify-end h-full md:justify-center pl-8">
         {/* Magazine issue label */}
         <motion.div 
           variants={textSlideVariants}

@@ -28,7 +28,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full z-50 px-12 py-4 md:px-24 md:py-6 flex items-center justify-between mix-blend-difference md:mix-blend-normal">
+      <nav className="fixed top-0 left-0 w-full z-50 editorial-container py-4 md:py-6 flex items-center justify-between mix-blend-difference md:mix-blend-normal">
         {/* Logo */}
         <a 
           href="#hero" 
