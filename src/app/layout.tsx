@@ -26,6 +26,11 @@ const graffiti = Permanent_Marker({
 export const metadata: Metadata = {
   title: "CHAPTER 21 — THE RACE CONTINUES",
   description: "An editorial-style Formula 1 and high-fashion digital tribute dedicated to my brother on his 21st birthday.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
